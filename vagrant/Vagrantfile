@@ -40,6 +40,8 @@ Vagrant.configure("2") do |config|
     sudo apt install -y nginx postgresql
     sudo ufw allow 'Nginx HTTP'
     sudo rm /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
+    sudo -u postgres createdb sample_prod
+    sudo -u postgres psql -c "CREATE USER sample_app WITH PASSWORD 'password';"
   SHELL
 end
 
