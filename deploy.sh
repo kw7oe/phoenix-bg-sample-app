@@ -15,8 +15,6 @@ HOST="vagrant@192.168.33.40"
 # service.
 DOMAIN="domain.app"
 
-LIVE_VERSION=$(curl -s -w "\n" "$DOMAIN/deployment_id")
-
 bold_echo() {
   echo -e "\033[1m---> $1\033[0m"
 }
@@ -133,24 +131,28 @@ clean_up() {
 }
 
 migrate() {
+  LIVE_VERSION=$(curl -s -w "\n" "$DOMAIN/deployment_id")
+
   if [ -z "$1" ]; then
     bold_echo "Setting blue green version to $LIVE_VERSION since none specified."
-    blue_green_version=$LIVE_VERSION
+    deploy_version=$LIVE_VERSION
   else
     bold_echo "Setting blue green version to $1"
-    blue_green_version=$1
+    deploy_version=$1
   fi
 
-  version=$(cat $blue_green_version)
+  if [ "$deploy_version" = "green" ]; then
+    version_file="green_version.txt"
+    env="source ~/$APP_NAME/.env && RELEASE_NODE=green PORT=5000 "
+  else
+    env="source ~/$APP_NAME/.env && PORT=4000 "
+    version_file="blue_version.txt"
+  fi
+
+  version=$(cat $version_file)
   bold_echo "Running migration for database for release $version..."
 
-  if [ "$blue_green_version" = "blue" ]; then
-    env="source ~/$APP_NAME/.env && PORT=4000 "
-  else
-    env="source ~/$APP_NAME/.env && RELEASE_NODE=green PORT=5000 "
-  fi
-
-  ssh $HOST "$env ~/$APP_NAME/$version/bin/$APP_NAME eval 'MyApp.Release.migrate()'"
+  ssh $HOST "$env ~/$APP_NAME/$version/bin/$APP_NAME eval 'Sample.Release.migrate()'"
 }
 
 
