@@ -4,8 +4,11 @@ This is the follow along repository for my ["Blue Green Deployment"](https://kai
 
 The Vagrant virtual machine is setup with the following:
 
-- Nginx _(default config is removed)_
+- Nginx
+  - Remove default configuration.
 - PostgreSQL
+  - Create `sample_prod` database.
+  - Create `sample_app` user.
 
 ## Instructions
 
@@ -35,7 +38,7 @@ cat >> ~/.ssh/authorized_keys << EOF
 EOF
 ```
 
-3. If you are following along the article, you could also add the following
+3. If you are following along the post, you could also add the following
    line to your `/etc/hosts` file _(you'll need sudo access to change
    /etc/hosts`)_:
 
@@ -43,10 +46,41 @@ EOF
 192.168.33.40 domain.app
 ```
 
-4. Now you can follow along on the blog post by:
+4. If you are following along the post, it assume that you have deployed
+   your application to the remote server. You can do that first by:
+
+```bash
+./deploy.sh
+
+# After deployed
+ssh vagrant@192.168.33.40
+curl localhost:4000/health
+#=> {"healthy":true,"version":"0.1.0"}
+```
+
+5. Now you can follow along on the blog post by:
 
 - Setting up the nginx configuration for blue version.
 - Setting up the nginx configuration for green version.
 
-5. You can destory the Vagrant VM by running `vagrant destroy` in the `vagrant`
+6. Deploying green version of our application:
+
+```bash
+git apply change_01.diff
+./deploy.sh
+```
+
+7. Promoting our green version to live:
+
+```bash
+./deploy.sh promote green
+# ---> Attempting to promote to green...
+# ---> Promoted live to blue
+
+# Wait 1-2 seconds
+curl domain.app/health
+#=> {"healthy":true,"version":"0.1.1"}
+```
+
+6. After finishing, You can destory the Vagrant VM by running `vagrant destroy` in the `vagrant`
    directory.
