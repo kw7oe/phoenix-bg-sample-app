@@ -1,0 +1,234 @@
+diff --git a/lib/sample/accounts.ex b/lib/sample/accounts.ex
+new file mode 100644
+index 0000000..c46b1dd
+--- /dev/null
++++ b/lib/sample/accounts.ex
+@@ -0,0 +1,104 @@
++defmodule Sample.Accounts do
++  @moduledoc """
++  The Accounts context.
++  """
++
++  import Ecto.Query, warn: false
++  alias Sample.Repo
++
++  alias Sample.Accounts.User
++
++  @doc """
++  Returns the list of users.
++
++  ## Examples
++
++      iex> list_users()
++      [%User{}, ...]
++
++  """
++  def list_users do
++    Repo.all(User)
++  end
++
++  @doc """
++  Gets a single user.
++
++  Raises `Ecto.NoResultsError` if the User does not exist.
++
++  ## Examples
++
++      iex> get_user!(123)
++      %User{}
++
++      iex> get_user!(456)
++      ** (Ecto.NoResultsError)
++
++  """
++  def get_user!(id), do: Repo.get!(User, id)
++
++  @doc """
++  Creates a user.
++
++  ## Examples
++
++      iex> create_user(%{field: value})
++      {:ok, %User{}}
++
++      iex> create_user(%{field: bad_value})
++      {:error, %Ecto.Changeset{}}
++
++  """
++  def create_user(attrs \\ %{}) do
++    %User{}
++    |> User.changeset(attrs)
++    |> Repo.insert()
++  end
++
++  @doc """
++  Updates a user.
++
++  ## Examples
++
++      iex> update_user(user, %{field: new_value})
++      {:ok, %User{}}
++
++      iex> update_user(user, %{field: bad_value})
++      {:error, %Ecto.Changeset{}}
++
++  """
++  def update_user(%User{} = user, attrs) do
++    user
++    |> User.changeset(attrs)
++    |> Repo.update()
++  end
++
++  @doc """
++  Deletes a user.
++
++  ## Examples
++
++      iex> delete_user(user)
++      {:ok, %User{}}
++
++      iex> delete_user(user)
++      {:error, %Ecto.Changeset{}}
++
++  """
++  def delete_user(%User{} = user) do
++    Repo.delete(user)
++  end
++
++  @doc """
++  Returns an `%Ecto.Changeset{}` for tracking user changes.
++
++  ## Examples
++
++      iex> change_user(user)
++      %Ecto.Changeset{data: %User{}}
++
++  """
++  def change_user(%User{} = user, attrs \\ %{}) do
++    User.changeset(user, attrs)
++  end
++end
+diff --git a/lib/sample/accounts/user.ex b/lib/sample/accounts/user.ex
+new file mode 100644
+index 0000000..b6ff9d9
+--- /dev/null
++++ b/lib/sample/accounts/user.ex
+@@ -0,0 +1,17 @@
++defmodule Sample.Accounts.User do
++  use Ecto.Schema
++  import Ecto.Changeset
++
++  schema "users" do
++    field :name, :string
++
++    timestamps()
++  end
++
++  @doc false
++  def changeset(user, attrs) do
++    user
++    |> cast(attrs, [:name])
++    |> validate_required([:name])
++  end
++end
+diff --git a/mix.exs b/mix.exs
+index 70aa96b..917071a 100644
+--- a/mix.exs
++++ b/mix.exs
+@@ -4,7 +4,7 @@ defmodule Sample.MixProject do
+   def project do
+     [
+       app: :sample,
+-      version: "0.1.0",
++      version: "0.1.1",
+       elixir: "~> 1.10",
+       elixirc_paths: elixirc_paths(Mix.env()),
+       compilers: [:phoenix, :gettext] ++ Mix.compilers(),
+diff --git a/priv/repo/migrations/20210514150958_create_users.exs b/priv/repo/migrations/20210514150958_create_users.exs
+new file mode 100644
+index 0000000..320096f
+--- /dev/null
++++ b/priv/repo/migrations/20210514150958_create_users.exs
+@@ -0,0 +1,12 @@
++defmodule Sample.Repo.Migrations.CreateUsers do
++  use Ecto.Migration
++
++  def change do
++    create table(:users) do
++      add :name, :string
++
++      timestamps()
++    end
++
++  end
++end
+diff --git a/test/sample/accounts_test.exs b/test/sample/accounts_test.exs
+new file mode 100644
+index 0000000..e5f4c4a
+--- /dev/null
++++ b/test/sample/accounts_test.exs
+@@ -0,0 +1,64 @@
++defmodule Sample.AccountsTest do
++  use Sample.DataCase
++
++  alias Sample.Accounts
++
++  describe "users" do
++    alias Sample.Accounts.User
++
++    @valid_attrs %{name: "some name"}
++    @update_attrs %{name: "some updated name"}
++    @invalid_attrs %{name: nil}
++
++    def user_fixture(attrs \\ %{}) do
++      {:ok, user} =
++        attrs
++        |> Enum.into(@valid_attrs)
++        |> Accounts.create_user()
++
++      user
++    end
++
++    test "list_users/0 returns all users" do
++      user = user_fixture()
++      assert Accounts.list_users() == [user]
++    end
++
++    test "get_user!/1 returns the user with given id" do
++      user = user_fixture()
++      assert Accounts.get_user!(user.id) == user
++    end
++
++    test "create_user/1 with valid data creates a user" do
++      assert {:ok, %User{} = user} = Accounts.create_user(@valid_attrs)
++      assert user.name == "some name"
++    end
++
++    test "create_user/1 with invalid data returns error changeset" do
++      assert {:error, %Ecto.Changeset{}} = Accounts.create_user(@invalid_attrs)
++    end
++
++    test "update_user/2 with valid data updates the user" do
++      user = user_fixture()
++      assert {:ok, %User{} = user} = Accounts.update_user(user, @update_attrs)
++      assert user.name == "some updated name"
++    end
++
++    test "update_user/2 with invalid data returns error changeset" do
++      user = user_fixture()
++      assert {:error, %Ecto.Changeset{}} = Accounts.update_user(user, @invalid_attrs)
++      assert user == Accounts.get_user!(user.id)
++    end
++
++    test "delete_user/1 deletes the user" do
++      user = user_fixture()
++      assert {:ok, %User{}} = Accounts.delete_user(user)
++      assert_raise Ecto.NoResultsError, fn -> Accounts.get_user!(user.id) end
++    end
++
++    test "change_user/1 returns a user changeset" do
++      user = user_fixture()
++      assert %Ecto.Changeset{} = Accounts.change_user(user)
++    end
++  end
++end
