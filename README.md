@@ -2,6 +2,13 @@
 
 This is the follow along repository for my ["Blue Green Deployment"](https://kaiwern.com/posts/2021/03/29/blue-green-deployment/) article.
 
+The script used here is the final script from the blog post. Hence, if you want to follow stage by stage according to the post, consider removing `deploy.sh`.
+
+The [instructons](#instructions) here currently only cover the final usage of
+the deploy script and some of the setup needed to follow along.
+
+## Vagrant
+
 The Vagrant virtual machine is setup with the following:
 
 - Nginx
@@ -82,5 +89,15 @@ curl domain.app/health
 #=> {"healthy":true,"version":"0.1.1"}
 ```
 
-6. After finishing, You can destory the Vagrant VM by running `vagrant destroy` in the `vagrant`
-   directory.
+8. Running migration:
+
+```
+# ./deploy.sh migrate <green | blue | default to live version>
+./deploy.sh migrate
+```
+
+9. For deploying subsequent blue/green version, feel free to change the code
+   around or by bumping the version in `mix.exs` and deploy through the script.
+
+10. After finishing, You can destory the Vagrant VM by running `vagrant destroy` in the `vagrant`
+    directory.

@@ -15,6 +15,8 @@ HOST="vagrant@192.168.33.40"
 # service.
 DOMAIN="domain.app"
 
+LIVE_VERSION=$(curl -s -w "\n" "$DOMAIN/deployment_id")
+
 bold_echo() {
   echo -e "\033[1m---> $1\033[0m"
 }
@@ -130,12 +132,36 @@ clean_up() {
   rm "$APP_NAME-"*.tar.gz
 }
 
+migrate() {
+  if [ -z "$1" ]; then
+    bold_echo "Setting blue green version to $LIVE_VERSION since none specified."
+    blue_green_version=$LIVE_VERSION
+  else
+    bold_echo "Setting blue green version to $1"
+    blue_green_version=$1
+  fi
+
+  version=$(cat $blue_green_version)
+  bold_echo "Running migration for database for release $version..."
+
+  if [ "$blue_green_version" = "blue" ]; then
+    env="source ~/$APP_NAME/.env && PORT=4000 "
+  else
+    env="source ~/$APP_NAME/.env && RELEASE_NODE=green PORT=5000 "
+  fi
+
+  ssh $HOST "$env ~/$APP_NAME/$version/bin/$APP_NAME eval 'MyApp.Release.migrate()'"
+}
+
+
 if [ "$1" = "build" ]; then
   build_release
 elif [ "$1" = "start" ]; then
   start_release
 elif [ "$1" = "promote" ]; then
   promote "$2"
+elif [ "$1" = "migrate" ]; then
+  migrate "$2"
 else
   build_release
   deploy_release
