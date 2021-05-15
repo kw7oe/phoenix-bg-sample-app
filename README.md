@@ -1,6 +1,6 @@
 # Sample
 
-This is the follow along repository for my ["Blue Green Deployment"](https://kaiwern.com/posts/2021/03/29/blue-green-deployment/) article.
+This is the follow along repository for my ["Blue Green Deployment"][0] article.
 
 The script used here is the final script from the blog post. Hence, if you want to follow stage by stage according to the post, consider removing `deploy.sh`.
 
@@ -65,10 +65,8 @@ The Vagrant virtual machine is setup with the following:
     #=> {"healthy":true,"version":"0.1.0"}
     ```
 
-5. Now you can follow along on the blog post by:
-
-    - Setting up the nginx configuration for blue version.
-    - Setting up the nginx configuration for green version.
+5. Now you can follow along on the blog post by proceeding to [setup the nginx
+   configuration][1].
 
 6. Deploying green version of our application:
 
@@ -101,3 +99,7 @@ The Vagrant virtual machine is setup with the following:
 
 10. After finishing, You can destory the Vagrant VM by running `vagrant destroy` in the `vagrant`
     directory.
+
+[0]: https://kaiwern.com/posts/2021/03/29/blue-green-deployment
+[1]: https://kaiwern.com/posts/2021/03/29/blue-green-deployment/#setting-up-nginx
+
