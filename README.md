@@ -100,6 +100,6 @@ The Vagrant virtual machine is setup with the following:
 10. After finishing, You can destory the Vagrant VM by running `vagrant destroy` in the `vagrant`
     directory.
 
-[0]: https://kaiwern.com/posts/2021/03/29/blue-green-deployment
-[1]: https://kaiwern.com/posts/2021/03/29/blue-green-deployment/#setting-up-nginx
+[0]: https://kaiwern.com/posts/2021/05/15/blue-green-deployment-with-nginx-for-elixir-phoenix-release/
+[1]: https://kaiwern.com/posts/2021/05/15/blue-green-deployment-with-nginx-for-elixir-phoenix-release/#setting-up-nginx
 
