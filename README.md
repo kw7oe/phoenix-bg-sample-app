@@ -1,6 +1,6 @@
 # Sample
 
-This is the follow along repository for my ["Blue Green Deployment"][0] article.
+This is the follow along repository for my ["Blue Green Deployment with Nginx for Elixir/Phoenix Release"][0] article.
 
 The script used here is the final script from the blog post. Hence, if you want to follow stage by stage according to the post, consider removing `deploy.sh`.
 
